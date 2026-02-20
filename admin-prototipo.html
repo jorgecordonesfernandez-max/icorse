@@ -1,0 +1,1688 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Interno | Limpiezas Icorse (Prototipo)</title>
+  <meta name="description" content="Prototipo interno de administración y gestión de empleados para Limpiezas Icorse." />
+  <style>
+    :root {
+      --bg: #f3f5f4;
+      --panel: #ffffff;
+      --line: #d7dfdc;
+      --text: #13201c;
+      --muted: #5f6f68;
+      --warm: #ef5b00;
+      --teal: #0f8a78;
+      --shadow: 0 10px 24px rgba(18, 32, 28, 0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      line-height: 1.45;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background:
+        linear-gradient(125deg, rgba(15, 138, 120, 0.08), rgba(255,255,255,0) 42%),
+        linear-gradient(310deg, rgba(239, 91, 0, 0.08), rgba(255,255,255,0) 44%),
+        var(--bg);
+    }
+
+    .login-card {
+      width: min(430px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .login-title {
+      margin: 0;
+      font-size: 1.1rem;
+      color: var(--teal);
+    }
+
+    .login-error {
+      margin: 0;
+      color: #9a3b00;
+      font-size: 0.9rem;
+      min-height: 18px;
+    }
+
+    .app {
+      width: min(1320px, 94%);
+      margin: 18px auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(90deg, rgba(239, 91, 0, 0.08), rgba(255,255,255,0) 35%),
+        linear-gradient(270deg, rgba(15, 138, 120, 0.08), rgba(255,255,255,0) 35%),
+        #fff;
+    }
+
+    .brand {
+      font-weight: 800;
+      letter-spacing: 0.2px;
+    }
+
+    .brand .w { color: var(--warm); }
+    .brand .t { color: var(--teal); }
+
+    .badge {
+      font-size: 0.84rem;
+      color: #fff;
+      background: linear-gradient(90deg, var(--warm), var(--teal));
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-weight: 700;
+    }
+
+    .topbar-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logout-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .col {
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px;
+      background: #fff;
+    }
+
+    .card h2 {
+      margin: 0 0 10px;
+      font-size: 1.02rem;
+    }
+
+    .chat-layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 10px;
+      min-height: 360px;
+    }
+
+    .chat-users {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      overflow: auto;
+      max-height: 420px;
+      background: #fafcfa;
+    }
+
+    .chat-user {
+      display: block;
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      text-align: left;
+      padding: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .chat-user small { display: block; color: var(--muted); font-weight: 400; }
+
+    .chat-user.active {
+      background: rgba(15, 138, 120, 0.08);
+      color: var(--teal);
+    }
+
+    .chat-main {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 360px;
+    }
+
+    .chat-head-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--line);
+      padding: 8px 10px;
+      background: #fff;
+    }
+
+    .chat-head {
+      padding: 0;
+      border-bottom: 0;
+      font-weight: 700;
+    }
+
+    .chat-clear-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .chat-clear-btn:hover {
+      background: #f7faf8;
+    }
+
+    .team-card.alert {
+      border-left: 3px solid #9a3b00;
+      background: rgba(239, 91, 0, 0.08);
+    }
+
+    .chat-head {
+      padding: 0;
+      border-bottom: 0;
+      font-weight: 700;
+    }
+
+    .chat-sub {
+      margin: 0;
+      padding: 0 10px 8px;
+      font-size: 0.84rem;
+      color: var(--muted);
+      border-bottom: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .messages {
+      padding: 10px;
+      overflow: auto;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      background: #fcfdfc;
+      min-height: 220px;
+    }
+
+    .msg {
+      max-width: 80%;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .msg.me {
+      justify-self: end;
+      background: rgba(15, 138, 120, 0.08);
+      border-color: rgba(15, 138, 120, 0.25);
+    }
+
+    .msg.other {
+      justify-self: start;
+      background: rgba(239, 91, 0, 0.08);
+      border-color: rgba(239, 91, 0, 0.2);
+    }
+
+    .chat-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      border-top: 1px solid var(--line);
+      padding: 10px;
+      background: #fff;
+    }
+
+    input, textarea, select, button {
+      font: inherit;
+    }
+
+    .input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--warm), var(--teal));
+    }
+
+    .calendar-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+
+    .calendar-nav {
+      display: inline-flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .btn-mini {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .calendar-title {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--teal);
+    }
+
+    .calendar {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    .calendar th,
+    .calendar td {
+      border: 1px solid var(--line);
+      text-align: center;
+      padding: 7px 5px;
+    }
+
+    .calendar th { background: #f7faf8; color: var(--muted); font-weight: 600; }
+
+    .calendar td.today {
+      background: rgba(15, 138, 120, 0.12);
+      font-weight: 700;
+      color: var(--teal);
+    }
+
+    .calendar td.event {
+      background: rgba(239, 91, 0, 0.12);
+      font-weight: 700;
+      color: #9a3b00;
+    }
+
+    .stack {
+      display: grid;
+      gap: 8px;
+    }
+
+    .event-filters {
+      display: inline-flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .event-filter-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .event-filter-btn.active {
+      background: rgba(15, 138, 120, 0.12);
+      color: var(--teal);
+      border-color: rgba(15, 138, 120, 0.35);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 8px;
+    }
+
+    .event-list,
+    .holiday-list,
+    .team-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      font-size: 0.94rem;
+      color: #000;
+    }
+
+    .holiday-list li::marker { color: var(--warm); }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(180px, 1fr));
+      gap: 8px;
+    }
+
+    .team-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      font-size: 0.92rem;
+    }
+
+    .status {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 999px;
+    }
+
+    .status.ok { background: rgba(15, 138, 120, 0.14); color: var(--teal); }
+    .status.warn { background: rgba(239, 91, 0, 0.15); color: #9a3b00; }
+
+    .incident-form {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .incident-list {
+      margin: 0;
+      padding-left: 0;
+      list-style: none;
+      display: grid;
+      gap: 7px;
+    }
+
+    .incident-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      font-size: 0.92rem;
+    }
+
+    .prio {
+      display: inline-block;
+      font-size: 0.77rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 2px 8px;
+    }
+
+    .prio.alta { background: rgba(208, 37, 37, 0.14); color: #9c1b1b; }
+    .prio.media { background: rgba(239, 91, 0, 0.16); color: #9a3b00; }
+    .prio.baja { background: rgba(15, 138, 120, 0.14); color: var(--teal); }
+
+    .machine-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.92rem;
+    }
+
+    .machine-table th,
+    .machine-table td {
+      border: 1px solid var(--line);
+      padding: 7px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .machine-table th {
+      background: #f7faf8;
+      color: var(--muted);
+    }
+
+    .machine-row.warn {
+      background: rgba(239, 91, 0, 0.07);
+    }
+
+    .machine-row.danger {
+      background: rgba(208, 37, 37, 0.08);
+    }
+
+    .machine-alert {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 800;
+      border-radius: 999px;
+      padding: 3px 8px;
+    }
+
+    .machine-alert.ok {
+      background: rgba(15, 138, 120, 0.14);
+      color: var(--teal);
+    }
+
+    .machine-alert.warn {
+      background: rgba(239, 91, 0, 0.16);
+      color: #9a3b00;
+    }
+
+    .machine-alert.danger {
+      background: rgba(208, 37, 37, 0.16);
+      color: #9c1b1b;
+    }
+
+    .machine-warning-box {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-left: 4px solid #9a3b00;
+      border-radius: 10px;
+      padding: 8px 10px;
+      background: rgba(239, 91, 0, 0.08);
+      font-size: 0.9rem;
+      color: #452100;
+    }
+
+    .emp-form,
+    .integral-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .mini-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      font-size: 0.92rem;
+    }
+
+    .emp-chat-box {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fcfdfc;
+      min-height: 140px;
+      max-height: 200px;
+      overflow: auto;
+      display: grid;
+      gap: 6px;
+      align-content: start;
+    }
+
+    .emp-msg {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 6px 8px;
+      font-size: 0.9rem;
+      background: #fff;
+    }
+
+    .emp-msg.admin {
+      background: rgba(15, 138, 120, 0.09);
+    }
+
+    .emp-msg.employee {
+      background: rgba(239, 91, 0, 0.09);
+    }
+
+    .integral-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      font-size: 0.92rem;
+    }
+
+    .footnote {
+      color: var(--muted);
+      font-size: 0.83rem;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 960px) {
+      .layout { grid-template-columns: 1fr; }
+      .chat-layout { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 1fr; }
+      .team-grid { grid-template-columns: 1fr; }
+      .incident-form { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="loginScreen">
+    <form class="login-card" id="loginForm">
+      <h1 class="login-title">Acceso interno Administración Icorse</h1>
+      <p class="footnote">Prototipo con acceso local. Cambia credenciales después.</p>
+      <input class="input" id="loginUser" type="text" placeholder="Usuario" required />
+      <input class="input" id="loginPass" type="password" placeholder="Contraseña" required />
+      <button class="btn" type="submit">Entrar al panel</button>
+      <p class="login-error" id="loginError"></p>
+    </form>
+  </section>
+
+  <div class="app hidden" id="adminApp">
+    <header class="topbar">
+      <div class="brand">
+        Panel Interno <span class="w">Limpiezas</span> <span class="t">Icorse</span>
+      </div>
+      <div class="topbar-actions">
+        <div class="badge">PROTOTIPO INTERNO</div>
+        <button class="logout-btn" id="adminLogoutBtn" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="col">
+        <section class="card">
+          <h2>Chat interno y puerta de chat web (index)</h2>
+          <div class="chat-layout">
+            <div class="chat-users" id="chatUsers"></div>
+            <div class="chat-main">
+              <div class="chat-head-wrap">
+                <div class="chat-head" id="chatHead">Canal</div>
+                <button class="chat-clear-btn" id="chatClearCurrent" type="button">Vaciar chat actual</button>
+              </div>
+              <p class="chat-sub" id="chatSub">Canal de trabajo</p>
+              <div class="messages" id="messages"></div>
+              <form class="chat-form" id="chatForm">
+                <input class="input" id="chatInput" type="text" placeholder="Escribe un mensaje..." required />
+                <button class="btn" type="submit">Enviar</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Equipo conectado</h2>
+          <div class="team-grid">
+            <article class="team-card">
+              <strong>Administración</strong><br />
+              M. Oficina
+              <div class="status ok">En línea</div>
+            </article>
+            <article class="team-card">
+              <strong>Coordinación</strong><br />
+              J. Operaciones
+              <div class="status ok">En ruta</div>
+            </article>
+            <article class="team-card" id="maintenanceCard">
+              <strong>Mantenimiento</strong><br />
+              Equipo Técnico
+              <div class="status ok" id="maintenanceStatus">Sin avisos</div>
+            </article>
+            <article class="team-card">
+              <strong>Limpieza industrial</strong><br />
+              Equipo Garajes
+              <div class="status ok">Servicio activo</div>
+            </article>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Incidencias por prioridad</h2>
+          <form class="incident-form" id="incidentForm">
+            <input class="input" id="incidentText" type="text" placeholder="Incidencia (ej: Cristalera portal 2 sin limpiar)" required />
+            <input class="input" id="incidentArea" type="text" placeholder="Zona / cliente" required />
+            <select class="input" id="incidentPriority" required>
+              <option value="alta">Alta</option>
+              <option value="media" selected>Media</option>
+              <option value="baja">Baja</option>
+            </select>
+            <button class="btn" type="submit">Añadir</button>
+          </form>
+          <ul class="incident-list" id="incidentList"></ul>
+        </section>
+
+        <section class="card">
+          <h2>Control de maquinaria</h2>
+          <table class="machine-table" id="machineTable">
+            <thead>
+              <tr>
+                <th>Unidad</th>
+                <th>Estado</th>
+                <th>Alerta</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="machine-warning-box" id="machineWarningBox"></div>
+          <p class="footnote">Actualiza el estado para saber qué equipos están operativos y cuáles necesitan revisión.</p>
+        </section>
+
+        <section class="card">
+          <h2>Gestión de empleados (accesos)</h2>
+          <form class="emp-form" id="employeeForm">
+            <input class="input" id="employeeName" type="text" placeholder="Nombre empleado" required />
+            <input class="input" id="employeeUser" type="text" placeholder="Usuario" required />
+            <input class="input" id="employeePass" type="text" placeholder="Contraseña" required />
+            <button class="btn" type="submit">Crear</button>
+          </form>
+          <ul class="mini-list" id="employeeList"></ul>
+        </section>
+      </div>
+
+      <div class="col">
+        <section class="card">
+          <h2>Chat con empleados</h2>
+          <div class="row">
+            <select class="input" id="empChatSelect"></select>
+            <input class="input" id="empChatInput" type="text" placeholder="Mensaje para empleado..." />
+            <button class="btn" id="empChatSend" type="button">Enviar</button>
+          </div>
+          <div class="emp-chat-box" id="empChatBox"></div>
+        </section>
+
+        <section class="card">
+          <h2>Actividades de limpiezas integrales</h2>
+          <form class="integral-form" id="integralForm">
+            <input class="input" id="integralTitle" type="text" placeholder="Actividad (ej: Integral edificio X)" required />
+            <input class="input" id="integralDate" type="date" required />
+            <input class="input" id="integralZone" type="text" placeholder="Zona / ubicación" required />
+            <button class="btn" type="submit">Crear</button>
+          </form>
+          <div id="integralAdminList" class="stack"></div>
+        </section>
+
+        <section class="card">
+          <h2>Calendario de eventos</h2>
+          <div class="calendar-head">
+            <p class="calendar-title" id="calendarMonth">Mes</p>
+            <div class="calendar-nav">
+              <button class="btn-mini" id="calPrev" type="button">?</button>
+              <button class="btn-mini" id="calToday" type="button">Hoy</button>
+              <button class="btn-mini" id="calNext" type="button">?</button>
+            </div>
+          </div>
+          <small class="footnote">Marca días con eventos internos</small>
+          <table class="calendar" id="calendarTable"></table>
+
+          <div class="stack" style="margin-top:10px;">
+            <form class="row" id="eventForm">
+              <input class="input" id="eventDate" type="date" required />
+              <input class="input" id="eventText" type="text" placeholder="Ej: Revisión máquinas garaje" required />
+              <button class="btn" type="submit">Añadir</button>
+            </form>
+            <div class="event-filters">
+              <button class="event-filter-btn active" id="filterCurrentWeek" type="button">Tu semana</button>
+              <button class="event-filter-btn" id="filterNextWeek" type="button">Próxima semana</button>
+              <button class="event-filter-btn" id="filterAll" type="button">Ver todos</button>
+            </div>
+            <p class="footnote" id="upcomingRange"></p>
+            <ul class="event-list" id="eventList"></ul>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Recordatorio de fiestas nacionales (España)</h2>
+          <ul class="holiday-list">
+            <li>1 enero: Año Nuevo</li>
+            <li>6 enero: Epifanía del Señor</li>
+            <li>Viernes Santo (fecha variable)</li>
+            <li>1 mayo: Fiesta del Trabajo</li>
+            <li>15 agosto: Asunción de la Virgen</li>
+            <li>12 octubre: Fiesta Nacional de España</li>
+            <li>1 noviembre: Todos los Santos</li>
+            <li>6 diciembre: Día de la Constitución</li>
+            <li>8 diciembre: Inmaculada Concepción</li>
+            <li>25 diciembre: Navidad</li>
+          </ul>
+          <p class="footnote">Prototipo: puedes ajustar este listado según calendario laboral anual y festivos locales.</p>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var AUTH_USER = "admin";
+      var AUTH_PASS = "icorse2026";
+      var SESSION_KEY = "icorse_admin_session";
+      var WEB_CONTACTS_KEY = "icorse_web_chat_inbox";
+      var ADMIN_REPLIES_KEY = "icorse_admin_chat_outbox";
+
+      var loginScreen = document.getElementById("loginScreen");
+      var adminApp = document.getElementById("adminApp");
+      var loginForm = document.getElementById("loginForm");
+      var loginUser = document.getElementById("loginUser");
+      var loginPass = document.getElementById("loginPass");
+      var loginError = document.getElementById("loginError");
+      var adminLogoutBtn = document.getElementById("adminLogoutBtn");
+
+      function unlockApp() {
+        loginScreen.classList.add("hidden");
+        adminApp.classList.remove("hidden");
+      }
+
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var u = loginUser.value.trim();
+        var p = loginPass.value;
+        if (u === AUTH_USER && p === AUTH_PASS) {
+          localStorage.setItem(SESSION_KEY, "ok");
+          unlockApp();
+          return;
+        }
+        loginError.textContent = "Usuario o contraseña incorrectos.";
+      });
+
+      if (localStorage.getItem(SESSION_KEY) === "ok") {
+        unlockApp();
+      }
+
+      adminLogoutBtn.addEventListener("click", function () {
+        localStorage.removeItem(SESSION_KEY);
+        loginScreen.classList.remove("hidden");
+        adminApp.classList.add("hidden");
+        loginForm.reset();
+      });
+
+      function seedWebInbox() {
+        var existing = localStorage.getItem(WEB_CONTACTS_KEY);
+        if (existing) return;
+        var demo = [
+          { id: 1, text: "Hola, necesito presupuesto para comunidad en Collado Villalba.", at: new Date().toISOString() },
+          { id: 2, text: "¿Trabajáis limpieza de garaje con maquinaria industrial?", at: new Date().toISOString() }
+        ];
+        localStorage.setItem(WEB_CONTACTS_KEY, JSON.stringify(demo));
+      }
+
+      function getWebInbox() {
+        try {
+          return JSON.parse(localStorage.getItem(WEB_CONTACTS_KEY) || "[]");
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function pushAdminReply(text) {
+        var list;
+        try {
+          list = JSON.parse(localStorage.getItem(ADMIN_REPLIES_KEY) || "[]");
+        } catch (_) {
+          list = [];
+        }
+        list.push({ text: text, at: new Date().toISOString() });
+        localStorage.setItem(ADMIN_REPLIES_KEY, JSON.stringify(list));
+      }
+
+      seedWebInbox();
+
+      var webMessages = getWebInbox().map(function (m) {
+        return { from: "other", text: m.text };
+      });
+
+      var channels = [
+        {
+          name: "Chat web (index)",
+          messages: webMessages.length ? webMessages : [
+            { from: "other", text: "Aún no hay contactos nuevos desde la web pública." }
+          ]
+        },
+        {
+          name: "Incidencias de servicios",
+          messages: [
+            { from: "other", text: "Aviso: revisión de garaje en Majadahonda." }
+          ]
+        },
+        {
+          name: "Personal para próximas integrales",
+          messages: [
+            { from: "me", text: "Ruta de mañana confirmada con equipo de limpieza industrial." }
+          ]
+        }
+      ];
+
+      var activeChannel = 0;
+      var chatUsers = document.getElementById("chatUsers");
+      var chatHead = document.getElementById("chatHead");
+      var chatSub = document.getElementById("chatSub");
+      var chatClearCurrent = document.getElementById("chatClearCurrent");
+      var messagesEl = document.getElementById("messages");
+      var chatForm = document.getElementById("chatForm");
+      var chatInput = document.getElementById("chatInput");
+
+      function renderChannels() {
+        chatUsers.innerHTML = "";
+        channels.forEach(function (ch, i) {
+          var btn = document.createElement("button");
+          btn.className = "chat-user" + (i === activeChannel ? " active" : "");
+          btn.type = "button";
+          var label = i === 0 ? "Puerta index <-> panel" : "Canal interno";
+          btn.innerHTML = ch.name + "<small>" + label + "</small>";
+          btn.addEventListener("click", function () {
+            activeChannel = i;
+            renderAll();
+          });
+          chatUsers.appendChild(btn);
+        });
+      }
+
+      function renderMessages() {
+        var ch = channels[activeChannel];
+        chatHead.textContent = ch.name;
+        chatSub.textContent = activeChannel === 0
+          ? "Mensajes entrantes de la web (index). Responde desde aquí."
+          : "Canal interno de coordinación.";
+        messagesEl.innerHTML = "";
+        if (!ch.messages.length) {
+          var empty = document.createElement("div");
+          empty.className = "footnote";
+          empty.textContent = "Sin mensajes en este canal.";
+          messagesEl.appendChild(empty);
+        }
+        ch.messages.forEach(function (m) {
+          var div = document.createElement("div");
+          div.className = "msg " + m.from;
+          div.textContent = m.text;
+          messagesEl.appendChild(div);
+        });
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+
+      function clearCurrentChat() {
+        var currentName = channels[activeChannel].name;
+        var ok = window.confirm("¿Seguro que quieres vaciar el canal \"" + currentName + "\"?");
+        if (!ok) return;
+
+        channels[activeChannel].messages = [];
+
+        // Si es el canal puente con web, limpia solo sus bandejas asociadas.
+        if (activeChannel === 0) {
+          localStorage.removeItem(WEB_CONTACTS_KEY);
+          localStorage.removeItem(ADMIN_REPLIES_KEY);
+        }
+
+        renderMessages();
+        renderChannels();
+      }
+
+      chatForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var text = chatInput.value.trim();
+        if (!text) return;
+        channels[activeChannel].messages.push({ from: "me", text: text });
+        if (activeChannel === 0) {
+          pushAdminReply(text);
+        }
+        chatInput.value = "";
+        renderMessages();
+      });
+
+      chatClearCurrent.addEventListener("click", function () {
+        clearCurrentChat();
+      });
+
+      var calendarMonth = document.getElementById("calendarMonth");
+      var calendarTable = document.getElementById("calendarTable");
+      var calPrev = document.getElementById("calPrev");
+      var calNext = document.getElementById("calNext");
+      var calToday = document.getElementById("calToday");
+      var eventForm = document.getElementById("eventForm");
+      var eventDate = document.getElementById("eventDate");
+      var eventText = document.getElementById("eventText");
+      var eventList = document.getElementById("eventList");
+      var upcomingRange = document.getElementById("upcomingRange");
+      var filterCurrentWeek = document.getElementById("filterCurrentWeek");
+      var filterNextWeek = document.getElementById("filterNextWeek");
+      var filterAll = document.getElementById("filterAll");
+      var incidentForm = document.getElementById("incidentForm");
+      var incidentText = document.getElementById("incidentText");
+      var incidentArea = document.getElementById("incidentArea");
+      var incidentPriority = document.getElementById("incidentPriority");
+      var incidentList = document.getElementById("incidentList");
+      var maintenanceCard = document.getElementById("maintenanceCard");
+      var maintenanceStatus = document.getElementById("maintenanceStatus");
+      var machineTableBody = document.querySelector("#machineTable tbody");
+      var machineWarningBox = document.getElementById("machineWarningBox");
+      var EVENTS_KEY = "icorse_admin_events";
+      var INCIDENTS_KEY = "icorse_admin_incidents";
+      var MACHINES_KEY = "icorse_admin_machines";
+      var EMP_USERS_KEY = "icorse_employee_users";
+      var EMP_CHAT_KEY = "icorse_employee_chat";
+      var INTEGRALS_KEY = "icorse_integrals_activities";
+      var INTEGRAL_SIGNUPS_KEY = "icorse_integrals_signups";
+      var now = new Date();
+      var viewYear = now.getFullYear();
+      var viewMonth = now.getMonth();
+      var eventFilterMode = "currentWeek";
+      var selectedEmpId = "";
+
+      var employeeForm = document.getElementById("employeeForm");
+      var employeeName = document.getElementById("employeeName");
+      var employeeUser = document.getElementById("employeeUser");
+      var employeePass = document.getElementById("employeePass");
+      var employeeList = document.getElementById("employeeList");
+
+      var empChatSelect = document.getElementById("empChatSelect");
+      var empChatInput = document.getElementById("empChatInput");
+      var empChatSend = document.getElementById("empChatSend");
+      var empChatBox = document.getElementById("empChatBox");
+
+      var integralForm = document.getElementById("integralForm");
+      var integralTitle = document.getElementById("integralTitle");
+      var integralDate = document.getElementById("integralDate");
+      var integralZone = document.getElementById("integralZone");
+      var integralAdminList = document.getElementById("integralAdminList");
+
+      function getEvents() {
+        try {
+          return JSON.parse(localStorage.getItem(EVENTS_KEY) || "[]");
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveEvents(events) {
+        localStorage.setItem(EVENTS_KEY, JSON.stringify(events));
+      }
+
+      function getIncidents() {
+        try {
+          return JSON.parse(localStorage.getItem(INCIDENTS_KEY) || "[]");
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveIncidents(incidents) {
+        localStorage.setItem(INCIDENTS_KEY, JSON.stringify(incidents));
+      }
+
+      function defaultMachines() {
+        return [
+          { id: "fregadora-1", name: "Fregadora industrial 1", status: "operativa" },
+          { id: "karcher-1", name: "Kärcher alta presión 1", status: "operativa" },
+          { id: "karcher-2", name: "Kärcher alta presión 2", status: "operativa" },
+          { id: "abrillantadora-1", name: "Abrillantadora industrial 1", status: "revision" },
+          { id: "aspirador-1", name: "Aspirador industrial 1", status: "operativa" },
+          { id: "aspirador-2", name: "Aspirador industrial 2", status: "operativa" }
+        ];
+      }
+
+      function getMachines() {
+        try {
+          var data = JSON.parse(localStorage.getItem(MACHINES_KEY) || "null");
+          if (!data || !Array.isArray(data) || !data.length) return defaultMachines();
+          return data;
+        } catch (_) {
+          return defaultMachines();
+        }
+      }
+
+      function saveMachines(machines) {
+        localStorage.setItem(MACHINES_KEY, JSON.stringify(machines));
+      }
+
+      function getEmployees() {
+        try {
+          var list = JSON.parse(localStorage.getItem(EMP_USERS_KEY) || "[]");
+          if (!Array.isArray(list)) return [];
+          return list;
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveEmployees(list) {
+        localStorage.setItem(EMP_USERS_KEY, JSON.stringify(list));
+      }
+
+      function getEmpChat() {
+        try {
+          var list = JSON.parse(localStorage.getItem(EMP_CHAT_KEY) || "[]");
+          if (!Array.isArray(list)) return [];
+          return list;
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveEmpChat(list) {
+        localStorage.setItem(EMP_CHAT_KEY, JSON.stringify(list));
+      }
+
+      function getIntegrals() {
+        try {
+          var list = JSON.parse(localStorage.getItem(INTEGRALS_KEY) || "[]");
+          if (!Array.isArray(list)) return [];
+          return list;
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveIntegrals(list) {
+        localStorage.setItem(INTEGRALS_KEY, JSON.stringify(list));
+      }
+
+      function getSignups() {
+        try {
+          var list = JSON.parse(localStorage.getItem(INTEGRAL_SIGNUPS_KEY) || "[]");
+          if (!Array.isArray(list)) return [];
+          return list;
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function saveSignups(list) {
+        localStorage.setItem(INTEGRAL_SIGNUPS_KEY, JSON.stringify(list));
+      }
+
+      function ensureDefaultEmployee() {
+        var list = getEmployees();
+        if (list.length) return;
+        list.push({
+          id: "emp-" + Date.now(),
+          name: "Empleado Demo",
+          username: "empleado1",
+          password: "icorse123"
+        });
+        saveEmployees(list);
+      }
+
+      function renderEmployees() {
+        var list = getEmployees();
+        employeeList.innerHTML = "";
+        if (!list.length) {
+          var li = document.createElement("li");
+          li.textContent = "Sin empleados creados.";
+          employeeList.appendChild(li);
+        } else {
+          list.forEach(function (emp) {
+            var li = document.createElement("li");
+            li.textContent = emp.name + " | Usuario: " + emp.username + " | Clave: " + emp.password;
+            employeeList.appendChild(li);
+          });
+        }
+      }
+
+      function renderEmpChatSelect() {
+        var list = getEmployees();
+        empChatSelect.innerHTML = "";
+        if (!list.length) {
+          var op = document.createElement("option");
+          op.value = "";
+          op.textContent = "Sin empleados";
+          empChatSelect.appendChild(op);
+          selectedEmpId = "";
+          return;
+        }
+        list.forEach(function (emp, idx) {
+          var op = document.createElement("option");
+          op.value = emp.id;
+          op.textContent = emp.name + " (" + emp.username + ")";
+          if (!selectedEmpId && idx === 0) selectedEmpId = emp.id;
+          if (selectedEmpId === emp.id) op.selected = true;
+          empChatSelect.appendChild(op);
+        });
+      }
+
+      function renderEmpChat() {
+        var chat = getEmpChat();
+        empChatBox.innerHTML = "";
+        if (!selectedEmpId) {
+          empChatBox.textContent = "Crea un empleado para iniciar chat.";
+          return;
+        }
+        var rows = chat.filter(function (m) { return m.userId === selectedEmpId; });
+        if (!rows.length) {
+          empChatBox.textContent = "Sin mensajes con este empleado.";
+          return;
+        }
+        rows.forEach(function (m) {
+          var d = document.createElement("div");
+          d.className = "emp-msg " + m.from;
+          var who = m.from === "admin" ? "Administración" : "Empleado";
+          d.textContent = who + ": " + m.text;
+          empChatBox.appendChild(d);
+        });
+        empChatBox.scrollTop = empChatBox.scrollHeight;
+      }
+
+      function renderIntegralsAdmin() {
+        var activities = getIntegrals().slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+        var signups = getSignups();
+        var emps = getEmployees();
+        integralAdminList.innerHTML = "";
+        if (!activities.length) {
+          var p = document.createElement("p");
+          p.className = "footnote";
+          p.textContent = "Sin actividades de integrales creadas.";
+          integralAdminList.appendChild(p);
+          return;
+        }
+
+        activities.forEach(function (act) {
+          var div = document.createElement("div");
+          div.className = "integral-item";
+          var signed = signups.filter(function (s) { return s.activityId === act.id; });
+          var names = signed.map(function (s) {
+            var emp = emps.find(function (e) { return e.id === s.userId; });
+            return emp ? emp.name : s.userId;
+          });
+          div.innerHTML =
+            "<strong>" + act.title + "</strong><br />" +
+            "<small style='color:var(--muted)'>" + act.date + " | " + act.zone + "</small><br />" +
+            "<small><strong>Apuntados:</strong> " + (names.length ? names.join(", ") : "Nadie por ahora") + "</small>";
+          integralAdminList.appendChild(div);
+        });
+      }
+
+      function toDateOnly(date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      }
+
+      function currentWeekPlus7Range() {
+        var now = new Date();
+        var day = (now.getDay() + 6) % 7;
+        var start = new Date(now);
+        start.setDate(now.getDate() - day);
+        start = toDateOnly(start);
+        var end = new Date(now);
+        end.setDate(now.getDate() + 7);
+        end = toDateOnly(end);
+        return { start: start, end: end };
+      }
+
+      function currentWeekRange() {
+        var now = new Date();
+        var day = (now.getDay() + 6) % 7;
+        var start = new Date(now);
+        start.setDate(now.getDate() - day);
+        start = toDateOnly(start);
+        var end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return { start: start, end: end };
+      }
+
+      function nextWeekRange() {
+        var current = currentWeekRange();
+        var start = new Date(current.end);
+        start.setDate(current.end.getDate() + 1);
+        start = toDateOnly(start);
+        var end = new Date(start);
+        end.setDate(start.getDate() + 6);
+        return { start: start, end: end };
+      }
+
+      function setFilterButtons() {
+        filterCurrentWeek.classList.toggle("active", eventFilterMode === "currentWeek");
+        filterNextWeek.classList.toggle("active", eventFilterMode === "nextWeek");
+        filterAll.classList.toggle("active", eventFilterMode === "all");
+      }
+
+      function toYMD(d) {
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      }
+
+      function renderEventList() {
+        var events = getEvents();
+        var range;
+        if (eventFilterMode === "currentWeek") {
+          range = currentWeekRange();
+          upcomingRange.textContent = "Vista actual: tu semana (" + toYMD(range.start) + " a " + toYMD(range.end) + ").";
+        } else if (eventFilterMode === "nextWeek") {
+          range = nextWeekRange();
+          upcomingRange.textContent = "Vista actual: próxima semana (" + toYMD(range.start) + " a " + toYMD(range.end) + ").";
+        } else {
+          range = null;
+          upcomingRange.textContent = "Vista actual: todos los avisos.";
+        }
+        eventList.innerHTML = "";
+        var filtered = events.filter(function (ev) {
+          if (!range) return true;
+          var d = new Date(ev.date + "T00:00:00");
+          d = toDateOnly(d);
+          return d >= range.start && d <= range.end;
+        });
+
+        if (!filtered.length) {
+          var li = document.createElement("li");
+          li.textContent = "Sin eventos para esta vista.";
+          eventList.appendChild(li);
+          return;
+        }
+        filtered
+          .slice()
+          .sort(function (a, b) { return a.date.localeCompare(b.date); })
+          .forEach(function (ev) {
+            var li = document.createElement("li");
+            li.textContent = ev.date + " - " + ev.text;
+            var del = document.createElement("button");
+            del.type = "button";
+            del.textContent = "Eliminar";
+            del.className = "btn";
+            del.style.padding = "3px 8px";
+            del.style.marginLeft = "8px";
+            del.style.fontSize = "0.78rem";
+            del.addEventListener("click", function () {
+              var list = getEvents();
+              var next = list.filter(function (x) {
+                if (ev.id && x.id) return x.id !== ev.id;
+                return !(x.date === ev.date && x.text === ev.text);
+              });
+              list = next;
+              saveEvents(list);
+              renderCalendar();
+              renderEventList();
+            });
+            li.appendChild(del);
+            eventList.appendChild(li);
+          });
+      }
+
+      function renderIncidents() {
+        var incidents = getIncidents()
+          .slice()
+          .sort(function (a, b) {
+            var order = { alta: 0, media: 1, baja: 2 };
+            return order[a.priority] - order[b.priority];
+          });
+
+        incidentList.innerHTML = "";
+        if (!incidents.length) {
+          var empty = document.createElement("li");
+          empty.textContent = "Sin incidencias registradas.";
+          incidentList.appendChild(empty);
+          updateMaintenanceAlert(0, false);
+          return;
+        }
+
+        incidents.forEach(function (it) {
+          var li = document.createElement("li");
+          li.className = "incident-item";
+
+          var left = document.createElement("div");
+          var pr = document.createElement("span");
+          pr.className = "prio " + it.priority;
+          pr.textContent = it.priority.toUpperCase();
+          left.appendChild(pr);
+
+          var txt = document.createElement("div");
+          txt.style.marginTop = "4px";
+          txt.innerHTML = "<strong>" + it.text + "</strong><br /><small style='color:var(--muted)'>" + it.area + "</small>";
+          left.appendChild(txt);
+
+          var del = document.createElement("button");
+          del.type = "button";
+          del.className = "btn";
+          del.style.padding = "4px 8px";
+          del.style.fontSize = "0.78rem";
+          del.textContent = "Resuelta";
+          del.addEventListener("click", function () {
+            var next = getIncidents().filter(function (x) { return x.id !== it.id; });
+            saveIncidents(next);
+            renderIncidents();
+          });
+
+          li.appendChild(left);
+          li.appendChild(del);
+          incidentList.appendChild(li);
+        });
+
+        var hasHigh = incidents.some(function (it) { return it.priority === "alta"; });
+        updateMaintenanceAlert(incidents.length, hasHigh);
+      }
+
+      function updateMaintenanceAlert(total, hasHigh) {
+        maintenanceCard.classList.remove("alert");
+        maintenanceStatus.classList.remove("ok", "warn");
+        if (!total) {
+          maintenanceStatus.classList.add("ok");
+          maintenanceStatus.textContent = "Sin avisos";
+          return;
+        }
+
+        maintenanceCard.classList.add("alert");
+        maintenanceStatus.classList.add("warn");
+        maintenanceStatus.textContent = hasHigh
+          ? total + " incidencias (hay alta prioridad)"
+          : total + " incidencias pendientes";
+      }
+
+      function renderMachines() {
+        var machines = getMachines();
+        machineTableBody.innerHTML = "";
+        var warnCount = 0;
+        var dangerCount = 0;
+        machines.forEach(function (m) {
+          var tr = document.createElement("tr");
+          tr.className = "machine-row";
+          if (m.status === "revision") {
+            tr.classList.add("warn");
+            warnCount += 1;
+          }
+          if (m.status === "fuera") {
+            tr.classList.add("danger");
+            dangerCount += 1;
+          }
+
+          var name = document.createElement("td");
+          name.textContent = m.name;
+          tr.appendChild(name);
+
+          var state = document.createElement("td");
+          var sel = document.createElement("select");
+          sel.className = "input";
+          sel.style.padding = "5px 8px";
+          sel.innerHTML =
+            "<option value='operativa'>Operativa</option>" +
+            "<option value='revision'>Necesita revisión</option>" +
+            "<option value='fuera'>Fuera de servicio</option>";
+          sel.value = m.status;
+          sel.addEventListener("change", function () {
+            var list = getMachines();
+            list = list.map(function (x) {
+              if (x.id === m.id) x.status = sel.value;
+              return x;
+            });
+            saveMachines(list);
+          });
+          state.appendChild(sel);
+          tr.appendChild(state);
+
+          var alertCell = document.createElement("td");
+          var alert = document.createElement("span");
+          alert.className = "machine-alert";
+          if (m.status === "operativa") {
+            alert.classList.add("ok");
+            alert.textContent = "Sin alerta";
+          } else if (m.status === "revision") {
+            alert.classList.add("warn");
+            alert.textContent = "Revisión pendiente";
+          } else {
+            alert.classList.add("danger");
+            alert.textContent = "Fuera de servicio";
+          }
+          alertCell.appendChild(alert);
+          tr.appendChild(alertCell);
+
+          machineTableBody.appendChild(tr);
+        });
+
+        if (!warnCount && !dangerCount) {
+          machineWarningBox.textContent = "Todo operativo: no hay alertas activas en maquinaria.";
+          machineWarningBox.style.borderLeftColor = "var(--teal)";
+          machineWarningBox.style.background = "rgba(15, 138, 120, 0.08)";
+          machineWarningBox.style.color = "#15382f";
+        } else {
+          machineWarningBox.textContent = "Alertas activas: " + warnCount + " en revisión y " + dangerCount + " fuera de servicio.";
+          machineWarningBox.style.borderLeftColor = "#9a3b00";
+          machineWarningBox.style.background = "rgba(239, 91, 0, 0.08)";
+          machineWarningBox.style.color = "#452100";
+        }
+      }
+
+      filterCurrentWeek.addEventListener("click", function () {
+        eventFilterMode = "currentWeek";
+        setFilterButtons();
+        renderEventList();
+      });
+
+      filterNextWeek.addEventListener("click", function () {
+        eventFilterMode = "nextWeek";
+        setFilterButtons();
+        renderEventList();
+      });
+
+      filterAll.addEventListener("click", function () {
+        eventFilterMode = "all";
+        setFilterButtons();
+        renderEventList();
+      });
+
+      incidentForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var text = incidentText.value.trim();
+        var area = incidentArea.value.trim();
+        var priority = incidentPriority.value;
+        if (!text || !area || !priority) return;
+        var items = getIncidents();
+        items.push({
+          id: Date.now(),
+          text: text,
+          area: area,
+          priority: priority
+        });
+        saveIncidents(items);
+        incidentForm.reset();
+        incidentPriority.value = "media";
+        renderIncidents();
+      });
+
+      employeeForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var name = employeeName.value.trim();
+        var user = employeeUser.value.trim();
+        var pass = employeePass.value.trim();
+        if (!name || !user || !pass) return;
+
+        var list = getEmployees();
+        var exists = list.some(function (x) { return x.username.toLowerCase() === user.toLowerCase(); });
+        if (exists) {
+          alert("Ese usuario ya existe.");
+          return;
+        }
+        list.push({
+          id: "emp-" + Date.now(),
+          name: name,
+          username: user,
+          password: pass
+        });
+        saveEmployees(list);
+        employeeForm.reset();
+        renderEmployees();
+        renderEmpChatSelect();
+        renderEmpChat();
+      });
+
+      empChatSelect.addEventListener("change", function () {
+        selectedEmpId = empChatSelect.value || "";
+        renderEmpChat();
+      });
+
+      empChatSend.addEventListener("click", function () {
+        if (!selectedEmpId) return;
+        var text = empChatInput.value.trim();
+        if (!text) return;
+        var list = getEmpChat();
+        list.push({
+          id: Date.now(),
+          userId: selectedEmpId,
+          from: "admin",
+          text: text,
+          at: new Date().toISOString()
+        });
+        saveEmpChat(list);
+        empChatInput.value = "";
+        renderEmpChat();
+      });
+
+      integralForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var title = integralTitle.value.trim();
+        var date = integralDate.value;
+        var zone = integralZone.value.trim();
+        if (!title || !date || !zone) return;
+        var list = getIntegrals();
+        list.push({
+          id: "act-" + Date.now(),
+          title: title,
+          date: date,
+          zone: zone
+        });
+        saveIntegrals(list);
+        integralForm.reset();
+        renderIntegralsAdmin();
+      });
+
+      function eventDaysForMonth(year, month) {
+        return getEvents()
+          .filter(function (ev) {
+            var d = new Date(ev.date + "T00:00:00");
+            return d.getFullYear() === year && d.getMonth() === month;
+          })
+          .map(function (ev) {
+            return new Date(ev.date + "T00:00:00").getDate();
+          });
+      }
+
+      function renderCalendar() {
+        var today = new Date();
+        var year = viewYear;
+        var month = viewMonth;
+        var monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        var weekDays = ["L", "M", "X", "J", "V", "S", "D"];
+
+        calendarMonth.textContent = monthNames[month] + " " + year;
+
+        var first = new Date(year, month, 1);
+        var startDay = (first.getDay() + 6) % 7;
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+        var events = eventDaysForMonth(year, month);
+
+        var html = "<thead><tr>" + weekDays.map(function (d) { return "<th>" + d + "</th>"; }).join("") + "</tr></thead><tbody><tr>";
+
+        for (var i = 0; i < startDay; i++) html += "<td></td>";
+
+        for (var day = 1; day <= daysInMonth; day++) {
+          var classes = [];
+          if (
+            day === today.getDate() &&
+            month === today.getMonth() &&
+            year === today.getFullYear()
+          ) classes.push("today");
+          if (events.indexOf(day) >= 0) classes.push("event");
+          html += "<td class='" + classes.join(" ") + "'>" + day + "</td>";
+          if ((startDay + day) % 7 === 0 && day !== daysInMonth) html += "</tr><tr>";
+        }
+
+        var cellsUsed = startDay + daysInMonth;
+        var trailing = (7 - (cellsUsed % 7)) % 7;
+        for (var j = 0; j < trailing; j++) html += "<td></td>";
+
+        html += "</tr></tbody>";
+        calendarTable.innerHTML = html;
+      }
+
+      calPrev.addEventListener("click", function () {
+        viewMonth -= 1;
+        if (viewMonth < 0) {
+          viewMonth = 11;
+          viewYear -= 1;
+        }
+        renderCalendar();
+      });
+
+      calNext.addEventListener("click", function () {
+        viewMonth += 1;
+        if (viewMonth > 11) {
+          viewMonth = 0;
+          viewYear += 1;
+        }
+        renderCalendar();
+      });
+
+      calToday.addEventListener("click", function () {
+        var d = new Date();
+        viewYear = d.getFullYear();
+        viewMonth = d.getMonth();
+        renderCalendar();
+      });
+
+      eventForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var date = eventDate.value;
+        var text = eventText.value.trim();
+        if (!date || !text) return;
+        var events = getEvents();
+        events.push({ id: Date.now(), date: date, text: text });
+        saveEvents(events);
+        eventForm.reset();
+        renderCalendar();
+        renderEventList();
+      });
+
+      function renderAll() {
+        renderChannels();
+        renderMessages();
+      }
+
+      renderAll();
+      renderCalendar();
+      setFilterButtons();
+      renderEventList();
+      renderIncidents();
+      renderMachines();
+      ensureDefaultEmployee();
+      renderEmployees();
+      renderEmpChatSelect();
+      renderEmpChat();
+      renderIntegralsAdmin();
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script></body>
+</html>
+
+
+

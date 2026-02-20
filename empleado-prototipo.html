@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Empleado | Limpiezas Icorse (Prototipo)</title>
+  <meta name="description" content="Prototipo de panel de empleados conectado al panel interno de administración." />
+  <style>
+    :root {
+      --bg: #f3f5f4;
+      --panel: #ffffff;
+      --line: #d7dfdc;
+      --text: #13201c;
+      --muted: #5f6f68;
+      --warm: #ef5b00;
+      --teal: #0f8a78;
+      --radius: 12px;
+      --shadow: 0 10px 24px rgba(18, 32, 28, 0.08);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, sans-serif; background: var(--bg); color: var(--text); }
+
+    .hidden { display: none !important; }
+
+    .login-wrap {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background:
+        linear-gradient(125deg, rgba(15, 138, 120, 0.08), rgba(255,255,255,0) 42%),
+        linear-gradient(310deg, rgba(239, 91, 0, 0.08), rgba(255,255,255,0) 44%),
+        var(--bg);
+    }
+
+    .login-card {
+      width: min(420px, 100%);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .title { margin: 0; color: var(--teal); font-size: 1.08rem; }
+    .muted { color: var(--muted); font-size: 0.88rem; margin: 0; }
+
+    .input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 9px 10px;
+      font: inherit;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(90deg, var(--warm), var(--teal));
+    }
+
+    .app {
+      width: min(1180px, 94%);
+      margin: 14px auto;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .badge {
+      font-size: 0.82rem;
+      color: #fff;
+      background: linear-gradient(90deg, var(--warm), var(--teal));
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-weight: 700;
+    }
+
+    .topbar-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logout-btn {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    h2 { margin: 0 0 10px; font-size: 1rem; }
+
+    .messages {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      min-height: 220px;
+      max-height: 280px;
+      overflow: auto;
+      padding: 8px;
+      display: grid;
+      gap: 7px;
+      background: #fcfdfc;
+    }
+
+    .msg {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 7px 9px;
+      font-size: 0.92rem;
+      max-width: 88%;
+    }
+
+    .msg.admin { background: rgba(15, 138, 120, 0.1); justify-self: start; }
+    .msg.employee { background: rgba(239, 91, 0, 0.1); justify-self: end; }
+
+    .row {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .calendar {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    .calendar th, .calendar td {
+      border: 1px solid var(--line);
+      text-align: center;
+      padding: 6px;
+    }
+
+    .calendar th { color: var(--muted); background: #f7faf8; }
+
+    .calendar td.today { background: rgba(15, 138, 120, 0.12); color: var(--teal); font-weight: 700; }
+    .calendar td.event { background: rgba(239, 91, 0, 0.12); color: #9a3b00; font-weight: 700; }
+
+    .integrals {
+      display: grid;
+      gap: 8px;
+    }
+
+    .integral-item {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fff;
+      font-size: 0.92rem;
+    }
+
+    .integral-item button {
+      margin-top: 6px;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-wrap" id="loginWrap">
+    <form class="login-card" id="empLoginForm">
+      <h1 class="title">Acceso de empleado</h1>
+      <p class="muted">Usa usuario y contraseña creados desde administración.</p>
+      <input class="input" id="empUser" type="text" placeholder="Usuario" required />
+      <input class="input" id="empPass" type="password" placeholder="Contraseña" required />
+      <button class="btn" type="submit">Entrar</button>
+      <p class="muted" id="empLoginError"></p>
+    </form>
+  </section>
+
+  <div class="app hidden" id="empApp">
+    <header class="topbar">
+      <div><strong id="empWelcome">Panel Empleado</strong></div>
+      <div class="topbar-actions">
+        <div class="badge">PROTOTIPO EMPLEADO</div>
+        <button class="logout-btn" id="empLogoutBtn" type="button">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <div class="layout">
+      <section class="card">
+        <h2>Chat con administración</h2>
+        <div class="messages" id="empMessages"></div>
+        <div class="row">
+          <input class="input" id="empChatInput" type="text" placeholder="Escribe a administración..." />
+          <button class="btn" id="empChatSend" type="button">Enviar</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Calendario de eventos (administración)</h2>
+        <p class="muted" id="empCalendarMonth"></p>
+        <table class="calendar" id="empCalendarTable"></table>
+      </section>
+
+      <section class="card" style="grid-column: 1 / -1;">
+        <h2>Apuntarte a una integral</h2>
+        <div class="integrals" id="empIntegrals"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var EMP_USERS_KEY = "icorse_employee_users";
+      var EMP_CHAT_KEY = "icorse_employee_chat";
+      var EVENTS_KEY = "icorse_admin_events";
+      var INTEGRALS_KEY = "icorse_integrals_activities";
+      var INTEGRAL_SIGNUPS_KEY = "icorse_integrals_signups";
+      var EMP_SESSION_KEY = "icorse_employee_session";
+
+      var loginWrap = document.getElementById("loginWrap");
+      var empApp = document.getElementById("empApp");
+      var empLoginForm = document.getElementById("empLoginForm");
+      var empUser = document.getElementById("empUser");
+      var empPass = document.getElementById("empPass");
+      var empLoginError = document.getElementById("empLoginError");
+      var empWelcome = document.getElementById("empWelcome");
+      var empLogoutBtn = document.getElementById("empLogoutBtn");
+
+      var empMessages = document.getElementById("empMessages");
+      var empChatInput = document.getElementById("empChatInput");
+      var empChatSend = document.getElementById("empChatSend");
+
+      var empCalendarMonth = document.getElementById("empCalendarMonth");
+      var empCalendarTable = document.getElementById("empCalendarTable");
+      var empIntegrals = document.getElementById("empIntegrals");
+
+      var currentEmployee = null;
+
+      function getJSON(key, fallback) {
+        try {
+          var v = JSON.parse(localStorage.getItem(key) || "null");
+          if (v === null) return fallback;
+          return v;
+        } catch (_) {
+          return fallback;
+        }
+      }
+
+      function setJSON(key, val) {
+        localStorage.setItem(key, JSON.stringify(val));
+      }
+
+      function getEmployees() { return getJSON(EMP_USERS_KEY, []); }
+      function getChat() { return getJSON(EMP_CHAT_KEY, []); }
+      function getEvents() { return getJSON(EVENTS_KEY, []); }
+      function getIntegrals() { return getJSON(INTEGRALS_KEY, []); }
+      function getSignups() { return getJSON(INTEGRAL_SIGNUPS_KEY, []); }
+
+      function unlock(emp) {
+        currentEmployee = emp;
+        setJSON(EMP_SESSION_KEY, { id: emp.id });
+        loginWrap.classList.add("hidden");
+        empApp.classList.remove("hidden");
+        empWelcome.textContent = "Panel Empleado - " + emp.name;
+        renderChat();
+        renderCalendar();
+        renderIntegrals();
+      }
+
+      function findEmployeeBySession() {
+        var s = getJSON(EMP_SESSION_KEY, null);
+        if (!s || !s.id) return null;
+        return getEmployees().find(function (e) { return e.id === s.id; }) || null;
+      }
+
+      empLoginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        var u = empUser.value.trim().toLowerCase();
+        var p = empPass.value;
+        var emp = getEmployees().find(function (x) {
+          return x.username.toLowerCase() === u && x.password === p;
+        });
+        if (!emp) {
+          empLoginError.textContent = "Credenciales incorrectas o usuario no creado en administración.";
+          return;
+        }
+        unlock(emp);
+      });
+
+      function renderChat() {
+        var list = getChat().filter(function (m) { return m.userId === currentEmployee.id; });
+        empMessages.innerHTML = "";
+        if (!list.length) {
+          empMessages.textContent = "Sin mensajes todavía.";
+          return;
+        }
+        list.forEach(function (m) {
+          var d = document.createElement("div");
+          d.className = "msg " + m.from;
+          d.textContent = (m.from === "admin" ? "Administración: " : "Tú: ") + m.text;
+          empMessages.appendChild(d);
+        });
+        empMessages.scrollTop = empMessages.scrollHeight;
+      }
+
+      empChatSend.addEventListener("click", function () {
+        if (!currentEmployee) return;
+        var text = empChatInput.value.trim();
+        if (!text) return;
+        var list = getChat();
+        list.push({ id: Date.now(), userId: currentEmployee.id, from: "employee", text: text, at: new Date().toISOString() });
+        setJSON(EMP_CHAT_KEY, list);
+        empChatInput.value = "";
+        renderChat();
+      });
+
+      function renderCalendar() {
+        var now = new Date();
+        var year = now.getFullYear();
+        var month = now.getMonth();
+        var monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+        var weekDays = ["L", "M", "X", "J", "V", "S", "D"];
+        empCalendarMonth.textContent = monthNames[month] + " " + year;
+
+        var first = new Date(year, month, 1);
+        var startDay = (first.getDay() + 6) % 7;
+        var daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        var eventDays = getEvents().filter(function (ev) {
+          var d = new Date(ev.date + "T00:00:00");
+          return d.getFullYear() === year && d.getMonth() === month;
+        }).map(function (ev) {
+          return new Date(ev.date + "T00:00:00").getDate();
+        });
+
+        var html = "<thead><tr>" + weekDays.map(function (d) { return "<th>" + d + "</th>"; }).join("") + "</tr></thead><tbody><tr>";
+        for (var i = 0; i < startDay; i++) html += "<td></td>";
+
+        for (var day = 1; day <= daysInMonth; day++) {
+          var cls = [];
+          if (day === now.getDate()) cls.push("today");
+          if (eventDays.indexOf(day) >= 0) cls.push("event");
+          html += "<td class='" + cls.join(" ") + "'>" + day + "</td>";
+          if ((startDay + day) % 7 === 0 && day !== daysInMonth) html += "</tr><tr>";
+        }
+
+        var cells = startDay + daysInMonth;
+        var trailing = (7 - (cells % 7)) % 7;
+        for (var j = 0; j < trailing; j++) html += "<td></td>";
+        html += "</tr></tbody>";
+        empCalendarTable.innerHTML = html;
+      }
+
+      function renderIntegrals() {
+        var activities = getIntegrals().slice().sort(function (a, b) { return a.date.localeCompare(b.date); });
+        var signups = getSignups();
+        empIntegrals.innerHTML = "";
+
+        if (!activities.length) {
+          empIntegrals.textContent = "Administración aún no ha creado actividades de integrales.";
+          return;
+        }
+
+        activities.forEach(function (act) {
+          var box = document.createElement("div");
+          box.className = "integral-item";
+
+          var already = signups.some(function (s) {
+            return s.activityId === act.id && s.userId === currentEmployee.id;
+          });
+
+          box.innerHTML = "<strong>" + act.title + "</strong><br /><small style='color:var(--muted)'>" + act.date + " | " + act.zone + "</small>";
+
+          var btn = document.createElement("button");
+          btn.className = "btn";
+          btn.type = "button";
+          btn.textContent = already ? "Ya estás apuntado" : "Apuntarme";
+          btn.disabled = already;
+          btn.addEventListener("click", function () {
+            var list = getSignups();
+            list.push({ id: Date.now(), activityId: act.id, userId: currentEmployee.id, at: new Date().toISOString() });
+            setJSON(INTEGRAL_SIGNUPS_KEY, list);
+            renderIntegrals();
+          });
+
+          box.appendChild(btn);
+          empIntegrals.appendChild(box);
+        });
+      }
+
+      var sessionEmp = findEmployeeBySession();
+      if (sessionEmp) unlock(sessionEmp);
+
+      empLogoutBtn.addEventListener("click", function () {
+        localStorage.removeItem(EMP_SESSION_KEY);
+        currentEmployee = null;
+        empApp.classList.add("hidden");
+        loginWrap.classList.remove("hidden");
+        empLoginForm.reset();
+      });
+
+      window.addEventListener("storage", function () {
+        if (!currentEmployee) return;
+        renderChat();
+        renderCalendar();
+        renderIntegrals();
+      });
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="js/supabase-client.js"></script></body>
+</html>
+
