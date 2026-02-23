@@ -69,7 +69,7 @@
       width: min(1180px, 94%);
       margin: 14px auto;
       background: #fff;
-      border: 1px solid var(--line);
+      border: 2px solid #000;
       border-radius: 16px;
       box-shadow: var(--shadow);
       overflow: hidden;
@@ -118,10 +118,11 @@
     }
 
     .card {
-      border: 1px solid var(--line);
+      border: 2px solid #000;
       border-radius: 12px;
       background: #fff;
       padding: 10px;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.22);
     }
 
     h2 { margin: 0 0 10px; font-size: 1rem; }
@@ -156,6 +157,31 @@
       gap: 8px;
     }
 
+    .calendar-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .calendar-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-mini {
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--text);
+      border-radius: 8px;
+      padding: 5px 9px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
     .calendar {
       width: 100%;
       border-collapse: collapse;
@@ -173,6 +199,24 @@
 
     .calendar td.today { background: rgba(15, 138, 120, 0.12); color: var(--teal); font-weight: 700; }
     .calendar td.event { background: rgba(239, 91, 0, 0.12); color: #9a3b00; font-weight: 700; }
+    .calendar td.selected { outline: 2px solid #0f8a78; outline-offset: -2px; }
+    .calendar td[data-date] { cursor: pointer; }
+
+    .day-alerts {
+      margin-top: 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 8px;
+      background: #fcfdfc;
+      font-size: 0.9rem;
+    }
+
+    .day-alerts ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 5px;
+    }
 
     .integrals {
       display: grid;
@@ -180,11 +224,12 @@
     }
 
     .integral-item {
-      border: 1px solid var(--line);
+      border: 2px solid #000;
       border-radius: 10px;
       padding: 8px;
       background: #fff;
       font-size: 0.92rem;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.16);
     }
 
     .integral-item button {
@@ -230,8 +275,19 @@
 
       <section class="card">
         <h2>Calendario de eventos (administración)</h2>
-        <p class="muted" id="empCalendarMonth"></p>
+        <div class="calendar-head">
+          <p class="muted" id="empCalendarMonth"></p>
+          <div class="calendar-nav">
+            <button class="btn-mini" id="empCalPrev" type="button">&lt;</button>
+            <button class="btn-mini" id="empCalToday" type="button">Hoy</button>
+            <button class="btn-mini" id="empCalNext" type="button">&gt;</button>
+          </div>
+        </div>
         <table class="calendar" id="empCalendarTable"></table>
+        <div class="day-alerts">
+          <strong id="empDayAlertsTitle">Avisos del día</strong>
+          <ul id="empDayAlertsList"></ul>
+        </div>
       </section>
 
       <section class="card" style="grid-column: 1 / -1;">
@@ -265,9 +321,18 @@
 
       var empCalendarMonth = document.getElementById("empCalendarMonth");
       var empCalendarTable = document.getElementById("empCalendarTable");
+      var empCalPrev = document.getElementById("empCalPrev");
+      var empCalToday = document.getElementById("empCalToday");
+      var empCalNext = document.getElementById("empCalNext");
+      var empDayAlertsTitle = document.getElementById("empDayAlertsTitle");
+      var empDayAlertsList = document.getElementById("empDayAlertsList");
       var empIntegrals = document.getElementById("empIntegrals");
 
       var currentEmployee = null;
+      var calendarNow = new Date();
+      var empViewYear = calendarNow.getFullYear();
+      var empViewMonth = calendarNow.getMonth();
+      var selectedDayYMD = null;
 
       function getJSON(key, fallback) {
         try {
@@ -289,12 +354,56 @@
       function getIntegrals() { return getJSON(INTEGRALS_KEY, []); }
       function getSignups() { return getJSON(INTEGRAL_SIGNUPS_KEY, []); }
 
+      function toDateOnly(date) {
+        return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+      }
+
+      function prunePastNotices() {
+        var today = toDateOnly(new Date());
+
+        var events = getEvents();
+        var nextEvents = events.filter(function (ev) {
+          if (!ev || !ev.date) return true;
+          var d = new Date(ev.date + "T00:00:00");
+          if (isNaN(d.getTime())) return true;
+          return toDateOnly(d) >= today;
+        });
+        if (nextEvents.length !== events.length) {
+          setJSON(EVENTS_KEY, nextEvents);
+        }
+
+        var activities = getIntegrals();
+        var nextActivities = activities.filter(function (act) {
+          if (!act || !act.date) return true;
+          var d = new Date(act.date + "T00:00:00");
+          if (isNaN(d.getTime())) return true;
+          return toDateOnly(d) >= today;
+        });
+        if (nextActivities.length !== activities.length) {
+          setJSON(INTEGRALS_KEY, nextActivities);
+        }
+
+        var validActivityIds = {};
+        nextActivities.forEach(function (act) {
+          validActivityIds[act.id] = true;
+        });
+
+        var signups = getSignups();
+        var nextSignups = signups.filter(function (s) {
+          return !!validActivityIds[s.activityId];
+        });
+        if (nextSignups.length !== signups.length) {
+          setJSON(INTEGRAL_SIGNUPS_KEY, nextSignups);
+        }
+      }
+
       function unlock(emp) {
         currentEmployee = emp;
         setJSON(EMP_SESSION_KEY, { id: emp.id });
         loginWrap.classList.add("hidden");
         empApp.classList.remove("hidden");
         empWelcome.textContent = "Panel Empleado - " + emp.name;
+        prunePastNotices();
         renderChat();
         renderCalendar();
         renderIntegrals();
@@ -347,10 +456,36 @@
         renderChat();
       });
 
+      function toYMD(date) {
+        return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
+      }
+
+      function renderDayAlerts() {
+        if (!selectedDayYMD) {
+          empDayAlertsTitle.textContent = "Avisos del día";
+          empDayAlertsList.innerHTML = "<li>Selecciona un día en el calendario.</li>";
+          return;
+        }
+
+        empDayAlertsTitle.textContent = "Avisos del " + selectedDayYMD;
+        var list = getEvents().filter(function (ev) { return ev.date === selectedDayYMD; });
+        empDayAlertsList.innerHTML = "";
+        if (!list.length) {
+          empDayAlertsList.innerHTML = "<li>Sin avisos para este día.</li>";
+          return;
+        }
+
+        list.forEach(function (ev) {
+          var li = document.createElement("li");
+          li.textContent = ev.text;
+          empDayAlertsList.appendChild(li);
+        });
+      }
+
       function renderCalendar() {
         var now = new Date();
-        var year = now.getFullYear();
-        var month = now.getMonth();
+        var year = empViewYear;
+        var month = empViewMonth;
         var monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
         var weekDays = ["L", "M", "X", "J", "V", "S", "D"];
         empCalendarMonth.textContent = monthNames[month] + " " + year;
@@ -359,21 +494,34 @@
         var startDay = (first.getDay() + 6) % 7;
         var daysInMonth = new Date(year, month + 1, 0).getDate();
 
-        var eventDays = getEvents().filter(function (ev) {
+        var monthEvents = getEvents().filter(function (ev) {
           var d = new Date(ev.date + "T00:00:00");
           return d.getFullYear() === year && d.getMonth() === month;
-        }).map(function (ev) {
+        });
+
+        var eventDays = monthEvents.map(function (ev) {
           return new Date(ev.date + "T00:00:00").getDate();
         });
+
+        if (!selectedDayYMD) {
+          if (year === now.getFullYear() && month === now.getMonth()) {
+            selectedDayYMD = toYMD(now);
+          } else {
+            selectedDayYMD = toYMD(new Date(year, month, 1));
+          }
+        }
 
         var html = "<thead><tr>" + weekDays.map(function (d) { return "<th>" + d + "</th>"; }).join("") + "</tr></thead><tbody><tr>";
         for (var i = 0; i < startDay; i++) html += "<td></td>";
 
         for (var day = 1; day <= daysInMonth; day++) {
           var cls = [];
-          if (day === now.getDate()) cls.push("today");
+          var cellDate = new Date(year, month, day);
+          var cellYMD = toYMD(cellDate);
+          if (day === now.getDate() && month === now.getMonth() && year === now.getFullYear()) cls.push("today");
           if (eventDays.indexOf(day) >= 0) cls.push("event");
-          html += "<td class='" + cls.join(" ") + "'>" + day + "</td>";
+          if (selectedDayYMD === cellYMD) cls.push("selected");
+          html += "<td data-date='" + cellYMD + "' class='" + cls.join(" ") + "'>" + day + "</td>";
           if ((startDay + day) % 7 === 0 && day !== daysInMonth) html += "</tr><tr>";
         }
 
@@ -382,6 +530,16 @@
         for (var j = 0; j < trailing; j++) html += "<td></td>";
         html += "</tr></tbody>";
         empCalendarTable.innerHTML = html;
+
+        var dayCells = empCalendarTable.querySelectorAll("td[data-date]");
+        dayCells.forEach(function (cell) {
+          cell.addEventListener("click", function () {
+            selectedDayYMD = cell.getAttribute("data-date");
+            renderCalendar();
+          });
+        });
+
+        renderDayAlerts();
       }
 
       function renderIntegrals() {
@@ -432,16 +590,61 @@
         empLoginForm.reset();
       });
 
+      empCalPrev.addEventListener("click", function () {
+        empViewMonth -= 1;
+        if (empViewMonth < 0) {
+          empViewMonth = 11;
+          empViewYear -= 1;
+        }
+        selectedDayYMD = toYMD(new Date(empViewYear, empViewMonth, 1));
+        renderCalendar();
+      });
+
+      empCalNext.addEventListener("click", function () {
+        empViewMonth += 1;
+        if (empViewMonth > 11) {
+          empViewMonth = 0;
+          empViewYear += 1;
+        }
+        selectedDayYMD = toYMD(new Date(empViewYear, empViewMonth, 1));
+        renderCalendar();
+      });
+
+      empCalToday.addEventListener("click", function () {
+        var today = new Date();
+        empViewYear = today.getFullYear();
+        empViewMonth = today.getMonth();
+        selectedDayYMD = toYMD(today);
+        renderCalendar();
+      });
       window.addEventListener("storage", function () {
+        prunePastNotices();
         if (!currentEmployee) return;
         renderChat();
         renderCalendar();
         renderIntegrals();
       });
+
+      setInterval(function () {
+        if (!currentEmployee) return;
+        prunePastNotices();
+        renderCalendar();
+        renderIntegrals();
+      }, 900000);
     })();
   </script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="supabase-config.js"></script>
-  <script src="js/supabase-client.js"></script></body>
+  <script src="js/supabase-client.js"></script>
+</body>
 </html>
+
+
+
+
+
+
+
+
+
 
