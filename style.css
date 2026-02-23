@@ -430,6 +430,10 @@ main.section {
   filter: brightness(0.96);
 }
 
+.services-zones-block {
+  margin-top: 28px;
+}
+
 .services-list article::after {
   content: "";
   position: absolute;
