@@ -1,4 +1,4 @@
-﻿User-agent: *
+User-agent: *
 Allow: /
 
-Sitemap: https://www.limpiezasicorse.com/sitemap.xml
+Sitemap: https://limpiezasicorse.com/sitemap.xml
