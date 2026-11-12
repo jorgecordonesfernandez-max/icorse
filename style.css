@@ -295,6 +295,38 @@ h2 {
   font-weight: 700;
 }
 
+.home-contact-actions {
+  margin-top: 18px;
+}
+
+.home-budget-btn {
+  background: var(--accent-hover);
+  min-height: 44px;
+  text-align: center;
+}
+
+.home-budget-btn:hover {
+  background: #09594e;
+}
+
+.chat-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  color: var(--accent-hover);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.home-budget-btn:focus-visible,
+.chat-link:focus-visible {
+  outline: 3px solid var(--accent-hover);
+  outline-offset: 4px;
+}
+
 .between-blocks-chat + .section {
   padding-top: 10px;
 }
