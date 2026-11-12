@@ -308,17 +308,20 @@ h2 {
   font-weight: 700;
 }
 
-.home-contact-actions {
+.home-contact-actions,
+.community-actions {
   margin-top: 18px;
 }
 
-.home-budget-btn {
+.home-budget-btn,
+.community-budget-btn {
   background: var(--accent-hover);
   min-height: 44px;
   text-align: center;
 }
 
-.home-budget-btn:hover {
+.home-budget-btn:hover,
+.community-budget-btn:hover {
   background: #09594e;
 }
 
@@ -335,6 +338,7 @@ h2 {
 }
 
 .home-budget-btn:focus-visible,
+.community-budget-btn:focus-visible,
 .chat-link:focus-visible {
   outline: 3px solid var(--accent-hover);
   outline-offset: 4px;
