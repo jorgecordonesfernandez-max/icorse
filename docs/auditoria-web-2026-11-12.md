@@ -11,8 +11,8 @@ Revisión visual de Inicio y Servicios a 1440 y 390 píxeles de ancho, con Chrom
 | Resuelta | En Inicio, la presentación empezaba directamente con dos párrafos y varias frases destacadas. | Añadidos el título principal visible «Limpieza de comunidades y viviendas» y el botón «Solicitar presupuesto». Se conservan los párrafos y la imagen; los destacados pueden revisarse más adelante. |
 | Resuelta | «Iniciar chat» era un párrafo sin enlace ni comportamiento asociado en `app.js`. | Convertido en «Iniciar chat por WhatsApp», con un enlace al número confirmado por el propietario y un área de pulsación de al menos 44 px. |
 | Resuelta | El menú variaba entre páginas y la sección activa apenas se distinguía. La altura fija reservada para la cabecera provocaba solapamientos en pantallas estrechas. | Menú uniforme en las diez páginas públicas, enlaces más espaciados, sección activa subrayada y foco de teclado visible. La cabecera conserva su posición al desplazarse y su altura real determina dónde empieza el contenido. |
-| Media | En Servicios conviven paneles suaves, bordes negros, textos manuscritos para las máquinas y un título inclinado. | Elegir una misma jerarquía de títulos para el bloque de maquinaria. Mantener sus fotos y la paleta de marca. |
-| Media | Los cinco PNG actuales suman unos 11,38 MiB. El logo pesa 1,52 MiB y la imagen principal 2,69 MiB, aunque se muestran mucho más pequeños. | Preparar versiones optimizadas para cada tamaño, conservar los originales y comparar la apariencia antes de sustituirlos. El peso no es una medición de velocidad ni de Core Web Vitals. |
+| Resuelta | El bloque de maquinaria combinaba textos manuscritos, un rótulo inclinado y máquinas a distintas alturas. | Título antes de las tres máquinas, tipografía de la web, colores de marca y composición alineada en escritorio y en columna en móvil. Las fotos se muestran completas. |
+| Resuelta | Los cinco PNG originales suman unos 11,38 MiB y se mostraban mucho más pequeños. | Versiones WebP adecuadas para su uso, imagen principal adaptable a la pantalla y favicon pequeño. Se conservan los PNG originales y sus direcciones como alternativa. Las dimensiones y posiciones de los elementos se compararon antes y después. |
 | Media | La imagen principal representa la entrada de un edificio residencial. Sirve para la marca, pero explica poco el trabajo dentro de una casa. | Incorporar más adelante una foto propia de limpieza de una vivienda, con permiso de uso y sin datos identificativos de clientes. |
 
 La primera mejora de contacto ya está aplicada: botón de presupuesto en Inicio, chat de WhatsApp funcional y teléfono pulsable en Contacto. Se conservan los textos de presentación, las imágenes y la identidad visual.
@@ -24,6 +24,23 @@ La primera mejora de contacto ya está aplicada: botón de presupuesto en Inicio
 - Enlace desde el texto de Inicio, bloque propio en Inicio y bloque destacado en Servicios.
 - Se reutilizan logo, colores, tipografía, paneles, cabecera y componentes existentes.
 - El alcance y la frecuencia se acuerdan en el presupuesto; no se anuncian tarifas ni disponibilidad garantizada.
+- En Inicio, el bloque de casas aparece antes de «Así trabajamos».
+
+## Últimas mejoras, realizadas por etapas
+
+1. **Presupuesto para comunidades:** botones al principio y al final de las dos páginas locales. Se comprobaron ambos destinos y su tamaño de pulsación en móvil antes de continuar.
+2. **Imágenes:** comparación de posiciones y tamaños antes y después de optimizar, revisión visual y comprobación de las diez páginas públicas. Se mantienen las imágenes originales y sus textos alternativos.
+3. **Maquinaria:** título de sección antes de los nombres, tipografía coherente y fotos completas. Revisión visual a 320, 390, 768 y 1440 px.
+
+### Peso de imágenes descargadas en las pruebas locales
+
+| Página y pantalla | Antes | Después | Reducción |
+| --- | --- | --- | --- |
+| Inicio, escritorio de 1440 px | 4,42 MB | 0,20 MB | 95,5 % |
+| Inicio, móvil de 390 px y densidad 2× | 4,42 MB | 0,27 MB | 93,9 % |
+| Servicios, escritorio y móvil | 9,11 MB | 0,37 MB | 96,0 % |
+
+Se mide la suma de bytes de los recursos de imagen descargados por Chrome en sesiones nuevas, sin caché previa. No equivale a una mejora porcentual del tiempo total de carga ni a una medición de Core Web Vitals con usuarios reales. Las capturas y los informes de comprobación se guardan fuera del repositorio publicado.
 
 ## Cuidado del posicionamiento
 
