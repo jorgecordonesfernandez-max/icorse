@@ -8,7 +8,7 @@ Revisión visual de Inicio y Servicios a 1440 y 390 píxeles de ancho, con Chrom
 
 | Prioridad | Observación | Siguiente mejora propuesta |
 | --- | --- | --- |
-| Alta | En Inicio, la presentación empieza con dos párrafos y varias frases destacadas. | Ya se ha añadido el botón «Solicitar presupuesto» junto al texto inicial. Queda pendiente revisar el título y los destacados conservando la composición. |
+| Resuelta | En Inicio, la presentación empezaba directamente con dos párrafos y varias frases destacadas. | Añadidos el título principal visible «Limpieza de comunidades y viviendas» y el botón «Solicitar presupuesto». Se conservan los párrafos y la imagen; los destacados pueden revisarse más adelante. |
 | Resuelta | «Iniciar chat» era un párrafo sin enlace ni comportamiento asociado en `app.js`. | Convertido en «Iniciar chat por WhatsApp», con un enlace al número confirmado por el propietario y un área de pulsación de al menos 44 px. |
 | Resuelta | El menú variaba entre páginas y la sección activa apenas se distinguía. La altura fija reservada para la cabecera provocaba solapamientos en pantallas estrechas. | Menú uniforme en las diez páginas públicas, enlaces más espaciados, sección activa subrayada y foco de teclado visible. La cabecera conserva su posición al desplazarse y su altura real determina dónde empieza el contenido. |
 | Media | En Servicios conviven paneles suaves, bordes negros, textos manuscritos para las máquinas y un título inclinado. | Elegir una misma jerarquía de títulos para el bloque de maquinaria. Mantener sus fotos y la paleta de marca. |
@@ -35,7 +35,7 @@ Una página útil dedicada a casas permite diferenciar la intención de búsqued
 
 ### Observaciones para otra revisión
 
-- Inicio no tiene un `h1`. Conviene incorporarlo al revisar su presentación, con un texto útil y visible que respete su enfoque actual.
+- Resuelto: Inicio cuenta con un único `h1` visible, «Limpieza de comunidades y viviendas», que mantiene el enfoque de la página y utiliza los colores de la marca.
 - Resuelto: la cabecera participa en el flujo de la página con `position: sticky`. Al repartirse el menú en varias líneas, el contenido se coloca debajo sin depender de alturas fijas, también con JavaScript desactivado.
 - Hay metadatos sociales con `www` y la canónica de Empleo usa `www`, mientras que el sitemap emplea el dominio sin `www`. Se puede revisar su coherencia en una intervención específica; en esta entrega solo se corrigen las canónicas duplicadas inequívocas de comunidades.
 - Resuelto: el propietario confirmó el `664 345 431` como número de WhatsApp. Se han actualizado los enlaces de Inicio y Contacto y el teléfono del aviso legal. Contacto incluye también un enlace para llamar a ese número.

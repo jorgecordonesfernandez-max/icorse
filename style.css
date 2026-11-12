@@ -204,6 +204,10 @@ h1 {
   color: var(--accent);
 }
 
+.home-title {
+  font-size: clamp(1.6rem, 2.8vw, 2.1rem);
+}
+
 .title-accent {
   color: var(--accent);
 }
