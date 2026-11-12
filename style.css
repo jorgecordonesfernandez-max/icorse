@@ -34,6 +34,12 @@ img {
   display: block;
 }
 
+.brand picture,
+.hero-image picture,
+.machine-item picture {
+  display: block;
+}
+
 .container {
   width: min(var(--max-width), 92%);
   margin: 0 auto;
@@ -271,6 +277,8 @@ h2 {
 }
 
 .hero-image img {
+  width: 100%;
+  height: auto;
   border-radius: var(--radius);
   border: 1px solid var(--line);
   background: #ffffff;
@@ -582,7 +590,7 @@ main.section {
   top: 8px;
   width: 44px;
   height: 44px;
-  background: url("images/logolimpieza.png") center/contain no-repeat;
+  background: url("images/logolimpieza-480.webp") center/contain no-repeat;
   opacity: 0.12;
   pointer-events: none;
 }
