@@ -10,7 +10,7 @@ Revisión visual de Inicio y Servicios a 1440 y 390 píxeles de ancho, con Chrom
 | --- | --- | --- |
 | Alta | En Inicio, la presentación empieza con dos párrafos y varias frases destacadas. | Ya se ha añadido el botón «Solicitar presupuesto» junto al texto inicial. Queda pendiente revisar el título y los destacados conservando la composición. |
 | Resuelta | «Iniciar chat» era un párrafo sin enlace ni comportamiento asociado en `app.js`. | Convertido en «Iniciar chat por WhatsApp», con un enlace al número confirmado por el propietario y un área de pulsación de al menos 44 px. |
-| Media | La cabecera ocupa aproximadamente 177 px en escritorio y el menú tiene enlaces muy juntos. La página de Inicio incluye Empleo en el menú y las de Servicios y Contacto no. La página activa apenas se distingue. | En una próxima revisión, unificar la navegación, dar más espacio a los enlaces y señalar la página actual. Probar el menú en móvil antes de ampliar sus opciones. |
+| Resuelta | El menú variaba entre páginas y la sección activa apenas se distinguía. La altura fija reservada para la cabecera provocaba solapamientos en pantallas estrechas. | Menú uniforme en las diez páginas públicas, enlaces más espaciados, sección activa subrayada y foco de teclado visible. La cabecera conserva su posición al desplazarse y su altura real determina dónde empieza el contenido. |
 | Media | En Servicios conviven paneles suaves, bordes negros, textos manuscritos para las máquinas y un título inclinado. | Elegir una misma jerarquía de títulos para el bloque de maquinaria. Mantener sus fotos y la paleta de marca. |
 | Media | Los cinco PNG actuales suman unos 11,38 MiB. El logo pesa 1,52 MiB y la imagen principal 2,69 MiB, aunque se muestran mucho más pequeños. | Preparar versiones optimizadas para cada tamaño, conservar los originales y comparar la apariencia antes de sustituirlos. El peso no es una medición de velocidad ni de Core Web Vitals. |
 | Media | La imagen principal representa la entrada de un edificio residencial. Sirve para la marca, pero explica poco el trabajo dentro de una casa. | Incorporar más adelante una foto propia de limpieza de una vivienda, con permiso de uso y sin datos identificativos de clientes. |
@@ -36,7 +36,7 @@ Una página útil dedicada a casas permite diferenciar la intención de búsqued
 ### Observaciones para otra revisión
 
 - Inicio no tiene un `h1`. Conviene incorporarlo al revisar su presentación, con un texto útil y visible que respete su enfoque actual.
-- A 320 px, el menú de Inicio se reparte en dos líneas y la cabecera puede solaparse con el comienzo del panel. Conviene hacer que el espacio reservado para la cabecera se adapte a su altura real al revisar la navegación.
+- Resuelto: la cabecera participa en el flujo de la página con `position: sticky`. Al repartirse el menú en varias líneas, el contenido se coloca debajo sin depender de alturas fijas, también con JavaScript desactivado.
 - Hay metadatos sociales con `www` y la canónica de Empleo usa `www`, mientras que el sitemap emplea el dominio sin `www`. Se puede revisar su coherencia en una intervención específica; en esta entrega solo se corrigen las canónicas duplicadas inequívocas de comunidades.
 - Resuelto: el propietario confirmó el `664 345 431` como número de WhatsApp. Se han actualizado los enlaces de Inicio y Contacto y el teléfono del aviso legal. Contacto incluye también un enlace para llamar a ese número.
 
