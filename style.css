@@ -438,6 +438,94 @@ main.section {
   margin-top: 28px;
 }
 
+.homes-intro {
+  margin: 24px 0;
+}
+
+.homes-feature {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.homes-feature > div {
+  flex: 1;
+}
+
+.homes-feature > .btn {
+  flex-shrink: 0;
+}
+
+.homes-actions {
+  margin-top: 18px;
+}
+
+.homes-home {
+  padding-top: 0;
+  padding-bottom: 28px;
+}
+
+.homes-text-link {
+  color: inherit;
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.homes-page .hero-image img {
+  width: 100%;
+  height: auto;
+}
+
+.homes-page .section-content > .homes-note {
+  margin-top: 18px;
+}
+
+.homes-page .section {
+  padding: 28px 0;
+}
+
+.homes-page .section-content > p + p {
+  margin-top: 14px;
+}
+
+.homes-page .info-points h3 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  color: var(--accent);
+}
+
+.homes-page .info-points article {
+  min-width: 0;
+}
+
+.homes-page a:not(.btn),
+.homes-intro a:not(.btn) {
+  color: var(--accent-hover);
+  text-underline-offset: 3px;
+}
+
+.homes-page .btn,
+.homes-feature .btn,
+.homes-intro .btn {
+  min-height: 44px;
+  text-align: center;
+}
+
+.homes-page a:focus-visible,
+.homes-home a:focus-visible,
+.homes-intro a:focus-visible {
+  outline: 3px solid var(--accent-hover);
+  outline-offset: 4px;
+}
+
+@media (max-width: 860px) {
+  .homes-feature {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+}
+
 .services-list article::after {
   content: "";
   position: absolute;
